@@ -105,7 +105,7 @@ function sourceMarkup(rule) {
         </div>
       </div>
       <div class="result-actions">
-        <a class="action-button" href="./documents/admission-guide.pdf#page=${encodeURIComponent(rule.page)}" target="_blank" rel="noopener">
+        <a class="action-button" href="./admission-guide.pdf#page=${encodeURIComponent(rule.page)}" target="_blank" rel="noopener">
           ${icons.external}<span>فتح الصفحة الأصلية</span>
         </a>
         <button class="action-button" type="button" data-action="copy">${icons.copy}<span>نسخ الإجابة</span></button>
@@ -264,7 +264,7 @@ function askGuide() {
 
 async function initialize() {
   try {
-    const response = await fetch("./data/guide-rules.json", { cache: "no-store" });
+    const response = await fetch("./guide-rules.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     guide = await response.json();
     renderQuickQuestions(guide.quickQuestions || []);
