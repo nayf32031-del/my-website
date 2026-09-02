@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إصدار الخطابات المتقدم - الهوية البصرية 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;700&family=Almarai:wght@400;700&family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&family=Changa:wght@400;600&family=IBM+Plex+Sans+Arabic:wght@400;600&family=Kufam:wght@400;700&family=Lateef:wght@400;700&family=Mada:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Readex+Pro:wght@400;700&family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --moe-green: #07a869;
+            --moe-blue: #3d7eb9;
+            --moe-teal: #0da9a6;
+            --moe-dark: #15445a;
+            --moe-gold: #c1b489;
+            --moe-gradient: linear-gradient(90deg, var(--moe-blue) 0%, var(--moe-green) 100%);
+            --app-bg: #f0f4f8;
+            --sidebar-bg: #ffffff;
+        }
+        
+        body { background-color: var(--app-bg); margin: 0; font-family: 'Cairo', sans-serif; overflow: hidden; }
+        
+        .app-container { display: flex; height: 100vh; }
+        .sidebar { width: 450px; background: var(--sidebar-bg); box-shadow: -5px 0 25px rgba(21, 68, 90, 0.08); overflow-y: auto; z-index: 10; display: flex; flex-direction: column; border-left: 1px solid #e2e8f0; }
+        .sidebar-section { border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; background-color: #f8fafc; }
+        .sidebar-section-title { font-size: 0.875rem; font-weight: 700; color: var(--moe-dark); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+        
+        .preview-area { flex-grow: 1; display: flex; justify-content: center; align-items: flex-start; padding: 2rem; overflow-y: auto; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px; }
+
+        .document-page {
+            background-color: white;
+            width: 210mm;
+            height: 297mm;
+            max-height: 297mm;
+            box-sizing: border-box;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+            transition: all 0.4s ease;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .content-wrapper { flex-grow: 1; display: flex; flex-direction: column; position: relative; z-index: 2; }
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50%; opacity: 0.04; pointer-events: none; z-index: 0; filter: grayscale(100%); transition: opacity 0.3s; }
+
+        /* الترويسة الموحدة والصارمة لجميع القوالب */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            color: var(--moe-dark);
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cliche-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.6;
+            font-size: 13.5px;
+            font-weight: 700;
+        }
+        
+        .single-line-text {
+            white-space: nowrap;
+        }
+
+        .logo-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .moe-logo { width: 85px; height: auto; }
+
+        .cliche-left {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            line-height: 1.8;
+            font-size: 13.5px;
+            font-weight: 700;
+        }
+        
+        .cliche-left-wrapper { text-align: right; min-width: 150px; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 2px; }
+        .info-label { margin-left: 10px; }
+
+        .subject-line { text-align: right; font-weight: 700; margin-bottom: 25px; }
+        .addressee { font-weight: 700; margin-bottom: 15px; display: flex; justify-content: space-between; }
+        .greeting { font-weight: 700; margin-bottom: 20px; font-size: 16px;}
+        .body-text p { margin-bottom: 12px; text-indent: 30px; text-align: justify; line-height: 2.2;}
+        .closing { font-weight: 700; text-align: center; margin-bottom: 10px; font-size: 16px;}
+        
+        /* التوقيعات (تدعم توقيع أو توقيعين) */
+        .signatures {
+            margin-top: auto;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+            position: relative;
+            z-index: 2;
+        }
+        .signatures.has-two {
+            justify-content: space-between;
+            padding: 0 15px;
+        }
+        .signature-box { text-align: center; width: 220px; }
+        .signature-title { font-weight: 700; margin-bottom: 45px; font-size: 15px; }
+        .signature-name { font-weight: 700; font-size: 16px; }
+
+        .hide-contact-info .modern-footer { display: none !important; }
+        .hidden-element { display: none !important; }
+
+        .theme-modern { padding: 20mm 20mm 25mm 20mm; border: none; }
+        .theme-modern .separator { display: none; }
+        .theme-modern .subject-line { font-size: 16px; color: var(--moe-dark); border-right: 3px solid var(--moe-green); padding-right: 12px; }
+        .theme-modern .addressee, .theme-modern .signature-title { color: var(--moe-dark); font-size: 17px; }
+        .theme-modern .highlight { color: var(--moe-green); font-weight: 700; }
+        .theme-modern .modern-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 25mm; display: flex; flex-direction: column; justify-content: flex-end; }
+        .theme-modern .footer-gradient-bar { height: 6px; background: var(--moe-gradient); width: 100%; }
+        .theme-modern .footer-info { display: flex; justify-content: space-between; padding: 5px 20mm 15px 20mm; font-size: 11px; color: var(--moe-dark); font-weight: 700; font-family: 'Tajawal', sans-serif; }
+
+        .theme-classic { padding: 20mm 20mm; outline: 2px solid var(--moe-dark); outline-offset: -12px; }
+        .theme-classic::before { content: ''; position: absolute; top: 15px; left: 15px; right: 15px; bottom: 15px; border: 1px solid var(--moe-gold); pointer-events: none; }
+        .theme-classic .separator { width: 100%; height: 2px; background: var(--moe-dark); margin: 10px 0 25px 0; position: relative; }
+        .theme-classic .separator::after { content: ''; position: absolute; top: 4px; left: 0; right: 0; height: 1px; background: var(--moe-gold); }
+        .theme-classic .subject-line { font-size: 17px; color: var(--moe-dark); border-right: 3px solid var(--moe-gold); padding-right: 12px; }
+        .theme-classic .highlight { color: var(--moe-dark); font-weight: 700; }
+        .theme-classic .modern-footer { display: none; }
+
+        .theme-memo { padding: 20mm 20mm 20mm 30mm; }
+        .theme-memo::after { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 15px; background: var(--moe-gradient); }
+        .theme-memo .separator { width: 100%; height: 1px; background: #e2e8f0; margin: 10px 0 20px 0; }
+        .theme-memo .subject-line { font-size: 18px; color: var(--moe-dark); background: #f8fafc; padding: 10px; border-radius: 4px;}
+        .theme-memo .highlight { color: var(--moe-blue); font-weight: 700; background: rgba(61, 126, 185, 0.1); padding: 0 5px;}
+        .theme-memo .modern-footer { display: none; }
+
+        .theme-minimalist { padding: 20mm; border: none; }
+        .theme-minimalist .header, .theme-minimalist .subject-line, .theme-minimalist .addressee, .theme-minimalist .signature-title, .theme-minimalist .body-text { color: #000; }
+        .theme-minimalist .separator { width: 100%; height: 1px; background: #000; margin: 10px 0 25px 0; }
+        .theme-minimalist .subject-line { border-right: 2px solid #000; padding-right: 10px; }
+        .theme-minimalist .highlight { color: #000; font-weight: 800; text-decoration: underline; text-underline-offset: 4px;}
+        .theme-minimalist .modern-footer { display: none; }
+
+        .theme-elegant { padding: 25mm 25mm; outline: 1px solid #e5e7eb; outline-offset: -15px; }
+        .theme-elegant .separator { width: 50%; height: 1px; background: var(--moe-gold); margin: 10px auto 30px auto; }
+        .theme-elegant .subject-line { text-align: center; color: var(--moe-dark); font-size: 18px; margin-bottom: 30px;}
+        .theme-elegant .info-label { color: var(--moe-gold); }
+        .theme-elegant .highlight { color: var(--moe-gold); font-weight: 700; }
+        .theme-elegant .modern-footer { display: none; }
+
+        .theme-formal-border { padding: 25mm 20mm; border: 4px solid var(--moe-dark); }
+        .theme-formal-border::before { content: ''; position: absolute; top: 6px; left: 6px; right: 6px; bottom: 6px; border: 1px solid var(--moe-dark); pointer-events: none; }
+        .theme-formal-border .separator { width: 100%; height: 4px; border-top: 1px solid var(--moe-dark); border-bottom: 1px solid var(--moe-dark); background: transparent; margin: 10px 0 25px 0; }
+        .theme-formal-border .subject-line { font-size: 18px; color: var(--moe-dark); border-right: none; background: var(--moe-dark); color: white; display: inline-block; padding: 5px 20px; border-radius: 20px;}
+        .theme-formal-border .highlight { color: var(--moe-dark); font-weight: 700; }
+        .theme-formal-border .modern-footer { display: none; }
+
+        .theme-dark-accent { padding: 20mm; border-top: 12px solid var(--moe-dark); border-bottom: 12px solid var(--moe-dark); }
+        .theme-dark-accent .separator { width: 100%; height: 2px; background: var(--moe-dark); margin: 15px 0 25px 0; }
+        .theme-dark-accent .subject-line { font-size: 16px; color: var(--moe-dark); background: #f0f4f8; padding: 10px; border-right: 4px solid var(--moe-dark); }
+        .theme-dark-accent .highlight { color: var(--moe-dark); font-weight: 800; }
+        .theme-dark-accent .modern-footer { display: none; }
+
+        .theme-gradient-edge { padding: 25mm 20mm; }
+        .theme-gradient-edge::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: var(--moe-gradient); }
+        .theme-gradient-edge::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 8px; background: var(--moe-gradient); }
+        .theme-gradient-edge .separator { width: 100%; height: 2px; background: var(--moe-gradient); margin: 15px 0 25px 0; }
+        .theme-gradient-edge .subject-line { font-size: 17px; color: var(--moe-blue); border-right: 3px solid var(--moe-blue); padding-right: 10px; }
+        .theme-gradient-edge .highlight { color: var(--moe-blue); font-weight: 700; }
+        .theme-gradient-edge .modern-footer { display: none; }
+
+        @media print {
+            body { background: white; padding: 0; overflow: hidden; }
+            .sidebar { display: none !important; }
+            .preview-area { padding: 0; background: white; display: block; }
+            .document-page { box-shadow: none !important; transform: none !important; margin: 0; }
+        }
+
+        @media (max-width: 1400px) { .document-page { transform: scale(0.85); } }
+        @media (max-width: 1100px) { .document-page { transform: scale(0.7); } }
+        @media (max-width: 768px) {
+            .app-container { flex-direction: column; }
+            .sidebar { width: 100%; height: 50vh; }
+            .preview-area { height: 50vh; padding: 1rem; }
+            .document-page { transform: scale(0.45); transform-origin: top center; }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <div class="p-6 bg-[#15445a] text-white sticky top-0 z-20 shadow-md">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-xl font-bold flex items-center gap-2 font-['Cairo']">
+                        <svg class="w-6 h-6 text-[#07a869]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        الخطاب الشامل المتقدم
+                    </h1>
+                    <span id="save-status" class="text-[10px] bg-green-500/20 text-green-300 px-2 py-1 rounded opacity-0 transition-opacity duration-300">تم الحفظ</span>
+                </div>
+                <p class="text-xs text-gray-300 mt-2 font-['Tajawal']">نظام إعداد المراسلات الرسمية لمدارس التعليم</p>
+            </div>
+
+            <div class="p-5 space-y-4 flex-grow font-['Tajawal'] text-sm">
+                
+                <!-- إعدادات القالب والعرض -->
+                <div class="sidebar-section border-blue-200 bg-blue-50/50">
+                    <div class="sidebar-section-title text-[#3d7eb9]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
+                        التصميم والعرض
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1 text-xs">القالب المستخدم</label>
+                            <select id="theme-selector" class="w-full p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-[#07a869] outline-none font-semibold text-[#15445a]">
+                                <option value="theme-modern">1. الهوية البصرية الجديدة 2025</option>
+                                <option value="theme-classic">2. التصميم الكلاسيكي الفاخر</option>
+                                <option value="theme-memo">3. المذكرة الداخلية (Notepad)</option>
+                                <option value="theme-minimalist">4. التصميم الرسمي البسيط (أبيض وأسود)</option>
+                                <option value="theme-elegant">5. التصميم الأنيق (هوامش واسعة)</option>
+                                <option value="theme-formal-border">6. إطار رسمي (للشهادات والقرارات)</option>
+                                <option value="theme-dark-accent">7. الهوية الداكنة (كحلي ملكي)</option>
+                                <option value="theme-gradient-edge">8. التصميم العصري (حواف متدرجة)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1 text-xs">الخطوط (12 خط متوفر)</label>
+                            <select id="font-selector" class="w-full p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-[#07a869] outline-none font-semibold text-[#15445a]">
+                                <optgroup label="الخطوط الأساسية (مقترحة)">
+                                    <option value="'Cairo', sans-serif">Cairo (عصري ورسمي - مقترح)</option>
+                                    <option value="'Amiri', serif">Amiri (كلاسيكي فاخر - للقرارات)</option>
+                                    <option value="'Tajawal', sans-serif">Tajawal (أنيق ومقروء - الهوية)</option>
+                                    <option value="'Almarai', sans-serif">Almarai (احترافي للشركات والمؤسسات)</option>
+                                    <option value="'IBM Plex Sans Arabic', sans-serif">IBM Plex (هندسي وجاد)</option>
+                                    <option value="'Noto Naskh Arabic', serif">Noto Naskh (نسخ تقليدي واضح)</option>
+                                </optgroup>
+                                <optgroup label="الخطوط الجديدة المضافة">
+                                    <option value="'Alexandria', sans-serif">Alexandria (عصري جداً للجهات الحكومية)</option>
+                                    <option value="'Readex Pro', sans-serif">Readex Pro (رسمي وسهل القراءة)</option>
+                                    <option value="'Changa', sans-serif">Changa (مربع وتقني حديث)</option>
+                                    <option value="'Mada', sans-serif">Mada (حديث وعملي وسريع)</option>
+                                    <option value="'Kufam', sans-serif">Kufam (كوفي حديث وأنيق)</option>
+                                    <option value="'Lateef', serif">Lateef (نسخ أنيق وبسيط)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="font-bold text-gray-700 text-xs">إظهار العلامة المائية (الشعار الشفاف)</label>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-watermark" class="sr-only peer" checked>
+                                <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#07a869]"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="font-bold text-gray-700 text-xs">إظهار بيانات التواصل (للقالب 1 فقط)</label>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-contact-info" class="sr-only peer" checked>
+                                <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#07a869]"></div>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1 text-xs">حجم خط النص الأساسي</label>
+                            <input type="range" id="input-fontsize" min="14" max="22" value="16" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        بيانات الترويسة العلوية
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">الإدارة العامة بمنطقة</label>
+                            <input type="text" id="input-directorate" value="الرياض" class="w-full p-1.5 border border-gray-300 rounded text-xs outline-none focus:border-[#07a869]">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">اسم المدرسة / القسم</label>
+                            <input type="text" id="input-school" value="ابتدائية سدوس" class="w-full p-1.5 border border-gray-300 rounded text-xs outline-none focus:border-[#07a869]">
+                        </div>
+                        <hr class="border-gray-200 my-2">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">الرقم</label>
+                                <input type="text" id="input-number" class="w-full p-1.5 border border-gray-300 rounded text-xs outline-none" placeholder="بدون">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">التاريخ</label>
+                                <input type="text" id="input-date" class="w-full p-1.5 border border-gray-300 rounded text-xs outline-none" placeholder="تلقائي">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">المرفقات</label>
+                                <input type="text" id="input-attachments" class="w-full p-1.5 border border-gray-300 rounded text-xs outline-none" placeholder="بدون">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section border-[#07a869]/30 bg-[#07a869]/5">
+                    <div class="sidebar-section-title text-[#07a869]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        محتوى الخطاب
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">الموضوع</label>
+                            <input type="text" id="input-subject" value="طلب ندب معلم لغة إنجليزية لتسديد العجز القائم" class="w-full p-2 border border-gray-300 rounded outline-none font-bold text-[#15445a] focus:border-[#07a869]">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">الموجه إليه (سعادة ...)</label>
+                            <input type="text" id="input-addressee" value="مدير إدارة شؤون المعلمين" class="w-full p-2 border border-gray-300 rounded outline-none focus:border-[#07a869]">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">الديباجة / التحية</label>
+                            <input type="text" id="input-salutation" value="السلام عليكم ورحمة الله وبركاته، أما بعد:" class="w-full p-2 border border-gray-300 rounded outline-none focus:border-[#07a869]">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1 flex justify-between">
+                                نص الخطاب
+                                <span class="text-[10px] text-[#07a869] font-normal">للتلوين ضع النص بين *نجمتين*</span>
+                            </label>
+                            <textarea id="input-body" rows="7" class="w-full p-2 border border-gray-300 rounded outline-none resize-none leading-relaxed focus:border-[#07a869]">انطلاقاً من حرصنا المشترك على استقرار الميدان التربوي، وتماشياً مع توجيهات وزارة التعليم الرامية إلى توفير بيئة تعليمية متكاملة تضمن حصول أبنائنا الطلاب على حقهم الكامل في التعليم بكفاءة وفاعلية.
+
+ونفيد سعادتكم بأنه يوجد لدينا *عجز فعلي وقائم في تخصص (اللغة الإنجليزية)*، حيث أن هذا العجز أدى إلى ارتفاع ملحوظ في أنصبة المعلمين وتراكم في جدول الحصص، مما ينعكس سلباً على جودة المخرج التعليمي.
+
+عليه؛ نأمل من سعادتكم التكرم بالاطلاع والموافقة على *ندب معلم لغة إنجليزية* لمدرستنا خلال هذا الفصل الدراسي، وذلك لسد العجز القائم وتلافياً لأي فاقد تعليمي.</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">الخاتمة</label>
+                            <input type="text" id="input-closing" value="شاكرين ومقدرين لسعادتكم حسن تعاونكم ودعمكم المستمر.." class="w-full p-2 border border-gray-300 rounded outline-none focus:border-[#07a869]">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        الاعتماد والتوقيع
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">المسمى الوظيفي (الرئيسي)</label>
+                            <input type="text" id="input-sign-title" value="مدير المدرسة" class="w-full p-1.5 border border-gray-300 rounded text-xs outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">الاسم</label>
+                            <input type="text" id="input-sign-name" value="سعد قاعد العتيبي" class="w-full p-1.5 border border-gray-300 rounded text-xs outline-none font-bold">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between mb-3 mt-4 border-t pt-3 border-gray-200">
+                        <label class="font-bold text-gray-700 text-xs">إضافة توقيع ثانٍ (مثال: وكيل المدرسة)</label>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-second-sign" class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#07a869]"></div>
+                        </label>
+                    </div>
+
+                    <div id="second-sign-fields" class="grid grid-cols-2 gap-3 hidden">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">المسمى الوظيفي (الثاني)</label>
+                            <input type="text" id="input-sign2-title" value="وكيل الشؤون المدرسية" class="w-full p-1.5 border border-gray-300 rounded text-xs outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">الاسم</label>
+                            <input type="text" id="input-sign2-name" value=".............................." class="w-full p-1.5 border border-gray-300 rounded text-xs outline-none font-bold">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="p-4 bg-white border-t border-gray-200 mt-auto shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] sticky bottom-0 z-20 flex flex-col gap-2">
+                <button onclick="window.print()" class="w-full bg-[#15445a] hover:bg-[#0b2b46] text-white font-bold py-2.5 px-4 rounded-lg transition duration-200 flex justify-center items-center gap-2 font-['Cairo'] shadow-md text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    طباعة / حفظ PDF
+                </button>
+                <button onclick="exportToWord()" class="w-full bg-[#3d7eb9] hover:bg-[#2b659c] text-white font-bold py-2.5 px-4 rounded-lg transition duration-200 flex justify-center items-center gap-2 font-['Cairo'] shadow-md text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    تصدير كملف Word (للتعديل)
+                </button>
+            </div>
+        </aside>
+
+        <main class="preview-area" id="print-area">
+            
+            <div id="document-container" class="document-page theme-modern">
+                
+                <img id="preview-watermark" src="https://upload.wikimedia.org/wikipedia/ar/1/17/Saudi_Ministry_of_Education_Logo_2025.png?utm_source=ar.wikipedia.org&utm_campaign=index&utm_content=original" class="watermark" alt="">
+
+                <div class="header">
+                    <div class="cliche-right">
+                        <span>المملكة العربية السعودية</span>
+                        <span>وزارة التعليــــــم</span>
+                        <span class="single-line-text">الإدارة العامة للتعليم بمنطقة <span id="preview-directorate">الرياض</span></span>
+                        <span><span id="preview-school">ابتدائية سدوس</span></span>
+                    </div>
+                    
+                    <div class="logo-center">
+                        <img src="https://upload.wikimedia.org/wikipedia/ar/1/17/Saudi_Ministry_of_Education_Logo_2025.png?utm_source=ar.wikipedia.org&utm_campaign=index&utm_content=original" alt="شعار وزارة التعليم" class="moe-logo">
+                    </div>
+
+                    <div class="cliche-left" dir="rtl">
+                        <div class="cliche-left-wrapper">
+                            <div class="info-row"><span class="info-label">الرقم:</span> <span id="preview-number">.........................</span></div>
+                            <div class="info-row"><span class="info-label">التاريخ:</span> <span id="preview-date">......./......./١٤٤هـ</span></div>
+                            <div class="info-row"><span class="info-label">المرفقات:</span> <span id="preview-attachments">.........................</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="separator"></div>
+
+                <div class="content-wrapper">
+                    
+                    <div class="subject-line">
+                        الموضوع: <span id="preview-subject">طلب ندب معلم لغة إنجليزية لتسديد العجز القائم</span>
+                    </div>
+
+                    <div class="addressee">
+                        <span>سعادة <span id="preview-addressee">مدير إدارة شؤون المعلمين</span></span>
+                        <span style="margin-right: 50px;">حفظه الله</span>
+                    </div>
+
+                    <div class="greeting" id="preview-salutation">
+                        السلام عليكم ورحمة الله وبركاته، أما بعد:
+                    </div>
+
+                    <div class="body-text" id="preview-body" style="font-size: 16px;">
+                        <!-- Content Injected via JS -->
+                    </div>
+
+                    <div class="closing" id="preview-closing">
+                        شاكرين ومقدرين لسعادتكم حسن تعاونكم ودعمكم المستمر..
+                    </div>
+                </div>
+
+                <div class="signatures" id="preview-signatures-container">
+                    <div class="signature-box hidden-element" id="preview-sign2-box">
+                        <div class="signature-title" id="preview-sign2-title">وكيل الشؤون المدرسية</div>
+                        <div class="signature-name" id="preview-sign2-name">..............................</div>
+                    </div>
+                    <div class="signature-box">
+                        <div class="signature-title" id="preview-sign-title">مدير المدرسة</div>
+                        <div class="signature-name" id="preview-sign-name">سعد قاعد العتيبي</div>
+                    </div>
+                </div>
+
+                <div class="modern-footer">
+                    <div class="footer-info">
+                        <div dir="ltr">011 4000000 📞</div>
+                        <div dir="ltr">✉️ school@moe.gov.sa</div>
+                        <div dir="ltr">🌐 www.moe.gov.sa</div>
+                    </div>
+                    <div class="footer-gradient-bar"></div>
+                </div>
+
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+        // 1. Array of all inputs for Auto-Save
+        const inputsToTrack = [
+            'theme-selector', 'font-selector', 'toggle-watermark', 'toggle-contact-info', 'input-fontsize',
+            'input-directorate', 'input-school', 'input-number', 'input-date', 'input-attachments',
+            'input-subject', 'input-addressee', 'input-salutation', 'input-body', 'input-closing',
+            'input-sign-title', 'input-sign-name', 'toggle-second-sign', 'input-sign2-title', 'input-sign2-name'
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const documentContainer = document.getElementById('document-container');
+            const dateInput = document.getElementById('input-date');
+            
+            // --- Helper: Convert Numbers to Arabic Numerals ---
+            const toArabicNumerals = (str) => {
+                const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+                return String(str).replace(/[0-9]/g, function(w) {
+                    return arabicNumbers[+w];
+                });
+            };
+
+            // --- Helper: Get Hijri Date ---
+            const getHijriDate = () => {
+                try {
+                    const formatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
+                        day: 'numeric', month: 'numeric', year: 'numeric'
+                    });
+                    const parts = formatter.formatToParts(new Date());
+                    const d = parts.find(p => p.type === 'day').value;
+                    const m = parts.find(p => p.type === 'month').value;
+                    const y = parts.find(p => p.type === 'year').value;
+                    return toArabicNumerals(`${d}/${m}/${y}هـ`);
+                } catch(e) {
+                    return ''; // fallback if browser doesn't support
+                }
+            };
+
+            // --- Auto-Save Logic ---
+            let saveTimeout;
+            const saveDraft = () => {
+                const data = {};
+                inputsToTrack.forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) {
+                        data[id] = el.type === 'checkbox' ? el.checked : el.value;
+                    }
+                });
+                localStorage.setItem('moe-letter-draft', JSON.stringify(data));
+                
+                // Show "Saved" toast
+                const status = document.getElementById('save-status');
+                status.classList.remove('opacity-0');
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(() => status.classList.add('opacity-0'), 2000);
+            };
+
+            const loadDraft = () => {
+                const saved = localStorage.getItem('moe-letter-draft');
+                if(saved) {
+                    const data = JSON.parse(saved);
+                    inputsToTrack.forEach(id => {
+                        const el = document.getElementById(id);
+                        if(el && data[id] !== undefined) {
+                            if(el.type === 'checkbox') el.checked = data[id];
+                            else el.value = data[id];
+                        }
+                    });
+                } else {
+                    // First time load: Set Hijri Date
+                    dateInput.value = getHijriDate();
+                }
+            };
+
+            // Load Draft first
+            loadDraft();
+
+            // --- Realtime Data Binding & Logic ---
+            const bindInput = (inputId, previewId, defaultValue, convertNumerals = false) => {
+                const input = document.getElementById(inputId);
+                const preview = document.getElementById(previewId);
+                const update = () => {
+                    let val = input.value.trim() === '' ? defaultValue : input.value;
+                    if (convertNumerals) val = toArabicNumerals(val);
+                    preview.innerHTML = val;
+                };
+                update();
+                input.addEventListener('input', () => { update(); saveDraft(); });
+            };
+
+            // Bind basic text fields
+            bindInput('input-directorate', 'preview-directorate', '....................');
+            bindInput('input-school', 'preview-school', '....................');
+            bindInput('input-number', 'preview-number', '.........................', true);
+            bindInput('input-date', 'preview-date', '......./......./١٤٤هـ', true);
+            bindInput('input-attachments', 'preview-attachments', '.........................');
+            bindInput('input-subject', 'preview-subject', '........................................');
+            bindInput('input-addressee', 'preview-addressee', '........................................');
+            bindInput('input-salutation', 'preview-salutation', '');
+            bindInput('input-closing', 'preview-closing', '');
+            bindInput('input-sign-title', 'preview-sign-title', '....................');
+            bindInput('input-sign-name', 'preview-sign-name', '....................');
+            bindInput('input-sign2-title', 'preview-sign2-title', '....................');
+            bindInput('input-sign2-name', 'preview-sign2-name', '....................');
+
+            // --- Contact Info Toggle ---
+            const contactInfoToggle = document.getElementById('toggle-contact-info');
+            function updateFooterVisibility() {
+                if(!contactInfoToggle.checked) documentContainer.classList.add('hide-contact-info');
+                else documentContainer.classList.remove('hide-contact-info');
+            }
+            contactInfoToggle.addEventListener('change', () => { updateFooterVisibility(); saveDraft(); });
+
+            // --- Theme Changer ---
+            const themeSelector = document.getElementById('theme-selector');
+            const applyTheme = () => {
+                documentContainer.className = 'document-page'; 
+                documentContainer.classList.add(themeSelector.value);
+                updateFooterVisibility();
+            };
+            themeSelector.addEventListener('change', () => { applyTheme(); saveDraft(); });
+            applyTheme();
+
+            // --- Font Changer ---
+            const fontSelector = document.getElementById('font-selector');
+            const applyFont = () => { documentContainer.style.fontFamily = fontSelector.value; };
+            fontSelector.addEventListener('change', () => { applyFont(); saveDraft(); });
+            applyFont();
+
+            // --- Watermark Toggle ---
+            const watermarkToggle = document.getElementById('toggle-watermark');
+            const watermarkImg = document.getElementById('preview-watermark');
+            const applyWatermark = () => { watermarkImg.style.opacity = watermarkToggle.checked ? '0.04' : '0'; };
+            watermarkToggle.addEventListener('change', () => { applyWatermark(); saveDraft(); });
+            applyWatermark();
+
+            // --- Font Size Slider ---
+            const fontSizeSlider = document.getElementById('input-fontsize');
+            const bodyPreview = document.getElementById('preview-body');
+            const applyFontSize = () => { bodyPreview.style.fontSize = `${fontSizeSlider.value}px`; };
+            fontSizeSlider.addEventListener('input', () => { applyFontSize(); saveDraft(); });
+            applyFontSize();
+
+            // --- Body Text Parser (Paragraphs & Highlights) ---
+            const bodyInput = document.getElementById('input-body');
+            const updateBody = () => {
+                const text = bodyInput.value;
+                if (!text.trim()) { bodyPreview.innerHTML = ''; return; }
+                const paragraphs = text.split('\n').filter(p => p.trim() !== '');
+                bodyPreview.innerHTML = paragraphs.map(p => {
+                    const highlighted = p.replace(/\*(.*?)\*/g, '<span class="highlight">$1</span>');
+                    return `<p>${highlighted}</p>`;
+                }).join('');
+            };
+            updateBody();
+            bodyInput.addEventListener('input', () => { updateBody(); saveDraft(); });
+
+            // --- Second Signature Toggle ---
+            const toggleSecondSign = document.getElementById('toggle-second-sign');
+            const secondSignFields = document.getElementById('second-sign-fields');
+            const previewSign2Box = document.getElementById('preview-sign2-box');
+            const signaturesContainer = document.getElementById('preview-signatures-container');
+            
+            const applySecondSignature = () => {
+                if(toggleSecondSign.checked) {
+                    secondSignFields.classList.remove('hidden');
+                    previewSign2Box.classList.remove('hidden-element');
+                    signaturesContainer.classList.add('has-two');
+                } else {
+                    secondSignFields.classList.add('hidden');
+                    previewSign2Box.classList.add('hidden-element');
+                    signaturesContainer.classList.remove('has-two');
+                }
+            };
+            toggleSecondSign.addEventListener('change', () => { applySecondSignature(); saveDraft(); });
+            applySecondSignature();
+        });
+
+        // --- Export to Word (.docx fallback to .doc HTML) ---
+        function exportToWord() {
+            // Get content inside the document page
+            const content = document.getElementById('document-container').innerHTML;
+            const fontUsed = document.getElementById('font-selector').value.replace(/'/g, "");
+            
+            // Construct a basic HTML string with MS Word namespaces
+            const htmlString = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40' dir="rtl">
+                <head>
+                    <meta charset="utf-8">
+                    <title>خطاب رسمي</title>
+                    <style>
+                        body { font-family: ${fontUsed}, Arial, sans-serif; direction: rtl; }
+                        .header { text-align: center; margin-bottom: 30px; }
+                        .cliche-right, .cliche-left { display: inline-block; width: 30%; vertical-align: top; }
+                        .logo-center { display: inline-block; width: 35%; text-align: center; }
+                        .subject-line { text-align: right; font-weight: bold; margin-bottom: 20px; font-size: 16px; }
+                        .addressee { font-weight: bold; margin-bottom: 20px; font-size: 16px; }
+                        .body-text p { text-align: justify; text-indent: 30px; line-height: 2; font-size: 16px; margin-bottom: 10px; }
+                        .signatures { width: 100%; text-align: center; margin-top: 50px; }
+                        .signature-box { display: inline-block; width: 45%; vertical-align: top; }
+                        .highlight { font-weight: bold; text-decoration: underline; }
+                        .watermark, .modern-footer { display: none; } /* إخفاء العناصر غير المتوافقة مع وورد */
+                    </style>
+                </head>
+                <body>
+                    ${content}
+                </body>
+                </html>
+            `;
+            
+            // Convert to Data URI and trigger download
+            const url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(htmlString);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'خطاب_المدرسة.doc'; // Note: uses .doc for backward compatibility of HTML-based word documents
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
