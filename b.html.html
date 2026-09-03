@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقرير التحضير اليومي - دار المفقاعي (النسخة الملكية)</title>
+    
+    <!-- مكتبة الخطوط العربية الشاملة (8 خطوط فاخرة) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;600;700&family=Changa:wght@400;600&family=IBM+Plex+Sans+Arabic:wght@400;600&family=Readex+Pro:wght@400;600&family=Reem+Kufi:wght@400;600&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            /* القالب الافتراضي: الأخضر والذهبي (مطابق للشعار) */
+            --primary: #1b5e3a;      /* أخضر داكن */
+            --secondary: #9c7b37;    /* ذهبي */
+            --bg-table-head: #f0f7f3;
+            --text-main: #111827;
+            --border-color: #1b5e3a;
+            --font-main: 'Amiri', serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: #cbd5e1;
+            transition: all 0.4s ease;
+        }
+
+        .a4-sheet {
+            width: 210mm;
+            height: 297mm; /* ارتفاع ثابت لضمان صفحة واحدة */
+            padding: 12mm 15mm; /* هوامش داخلية مدروسة */
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            box-sizing: border-box;
+            overflow: hidden; /* لمنع تمدد العناصر خارج الورقة */
+        }
+
+        /* العلامة المائية */
+        .a4-sheet::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            background-image: url('المفقاعي.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.04; /* شفافية عالية جداً لتبدو كعلامة مائية فخمة */
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid transparent;
+            text-align: center;
+            font-family: inherit;
+            color: var(--text-main);
+            font-size: inherit;
+            font-weight: inherit;
+            transition: 0.3s;
+            padding: 2px 0;
+        }
+        
+        .a4-sheet input:hover:not(:read-only), 
+        .a4-sheet input:focus:not(:read-only) {
+            border-bottom: 1px dashed var(--secondary);
+            outline: none;
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 4mm;
+            table-layout: fixed; /* يمنع الجدول من التمدد خارج الصفحة */
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 4px 2px;
+            text-align: center;
+            font-size: 13px; /* حجم خط مدروس ليتسع في A4 */
+            vertical-align: middle;
+        }
+        
+        th {
+            background-color: var(--bg-table-head);
+            color: var(--primary);
+            font-weight: bold;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        /* العناوين والأقسام */
+        .section-title {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 6px;
+            display: inline-block;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 2px;
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 0; 
+        }
+        
+        @media print {
+            body {
+                background: white !important;
+                margin: 0;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .a4-sheet {
+                margin: 0 !important;
+                padding: 12mm 15mm !important;
+                box-shadow: none !important;
+                border: none !important;
+                width: 210mm !important;
+                height: 297mm !important;
+            }
+            input {
+                border-bottom: none !important;
+                background: transparent !important;
+            }
+            input::placeholder {
+                color: transparent;
+            }
+            th {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                background-color: var(--bg-table-head) !important;
+                color: var(--primary) !important;
+            }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+
+        /* تخصيص التمرير (Scrollbar) */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="no-print bg-slate-900 text-white p-3 sticky top-0 z-50 shadow-2xl border-b-4" style="border-color: var(--secondary)">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4 text-sm">
+            
+            <div class="flex items-center gap-5">
+                <!-- 1. تغيير الخطوط (8 خيارات) -->
+                <div class="flex items-center gap-2">
+                    <label class="text-gray-300">الخط:</label>
+                    <select id="fontSelector" onchange="changeFont(this.value)" class="bg-slate-800 border border-slate-600 rounded px-2 py-1 focus:outline-none focus:border-white">
+                        <option value="'Amiri', serif">أميري (رسمي ملكي)</option>
+                        <option value="'Tajawal', sans-serif">تجوال (أنيق وعصري)</option>
+                        <option value="'Cairo', sans-serif">كايرو (واضح وعريض)</option>
+                        <option value="'Reem Kufi', sans-serif">ريم كوفي (تراثي فاخر)</option>
+                        <option value="'Aref Ruqaa', serif">رقعة (مخطوطة تقليدية)</option>
+                        <option value="'Changa', sans-serif">تشانجا (هندسي قوي)</option>
+                        <option value="'IBM Plex Sans Arabic', sans-serif">IBM (احترافي شركات)</option>
+                        <option value="'Readex Pro', sans-serif">ريدكس (ديناميكي)</option>
+                    </select>
+                </div>
+
+                <!-- 2. تغيير القوالب (7 خيارات لونية) -->
+                <div class="flex items-center gap-2">
+                    <label class="text-gray-300">القالب:</label>
+                    <div class="flex gap-1">
+                        <!-- أخضر/ذهبي (شعار الجمعية) -->
+                        <button onclick="changeTheme('#1b5e3a', '#9c7b37', '#f0f7f3')" class="w-6 h-6 rounded-full hover:scale-110 transition shadow-inner border border-white/20" style="background: linear-gradient(135deg, #1b5e3a 50%, #9c7b37 50%);" title="هوية الجمعية (أخضر وذهبي)"></button>
+                        <!-- كحلي/فضي (وزاري) -->
+                        <button onclick="changeTheme('#1e3a8a', '#94a3b8', '#f0f9ff')" class="w-6 h-6 rounded-full hover:scale-110 transition shadow-inner border border-white/20" style="background: linear-gradient(135deg, #1e3a8a 50%, #94a3b8 50%);" title="وزاري (كحلي وفضي)"></button>
+                        <!-- ذهبي/أسود (فاخر جدا) -->
+                        <button onclick="changeTheme('#000000', '#d4af37', '#fafafa')" class="w-6 h-6 rounded-full hover:scale-110 transition shadow-inner border border-white/20" style="background: linear-gradient(135deg, #000000 50%, #d4af37 50%);" title="فاخر (أسود وذهبي)"></button>
+                        <!-- عنابي/بيج (كلاسيك) -->
+                        <button onclick="changeTheme('#7f1d1d', '#d6d3d1', '#fef2f2')" class="w-6 h-6 rounded-full hover:scale-110 transition shadow-inner border border-white/20" style="background: linear-gradient(135deg, #7f1d1d 50%, #d6d3d1 50%);" title="كلاسيك (عنابي)"></button>
+                        <!-- زمردي نقي -->
+                        <button onclick="changeTheme('#064e3b', '#10b981', '#ecfdf5')" class="w-6 h-6 rounded-full hover:scale-110 transition shadow-inner border border-white/20" style="background: linear-gradient(135deg, #064e3b 50%, #10b981 50%);" title="زمردي"></button>
+                        <!-- بني صحراوي -->
+                        <button onclick="changeTheme('#451a03', '#d97706', '#fffbeb')" class="w-6 h-6 rounded-full hover:scale-110 transition shadow-inner border border-white/20" style="background: linear-gradient(135deg, #451a03 50%, #d97706 50%);" title="صحراوي (بني)"></button>
+                        <!-- أحادي (للطباعة العادية أبيض وأسود) -->
+                        <button onclick="changeTheme('#171717', '#525252', '#ffffff')" class="w-6 h-6 rounded-full hover:scale-110 transition shadow-inner border border-white/20" style="background: linear-gradient(135deg, #171717 50%, #525252 50%);" title="أحادي (طباعة اقتصادية)"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <span class="text-xs text-slate-400 hidden md:inline">انقر على أي نص بالورقة لتعديله</span>
+                <button onclick="window.print()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-1.5 px-6 rounded shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5 border border-emerald-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+                    </svg>
+                    طباعة / تصدير PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="a4-sheet">
+        <div class="content-wrapper">
+            
+            <!-- الترويسة الفاخرة (Header) -->
+            <header class="flex justify-between items-center border-b-2 pb-2 mb-4" style="border-color: var(--primary)">
+                
+                <!-- يمين الترويسة -->
+                <div class="text-right w-1/3 leading-relaxed">
+                    <h2 class="font-bold text-sm">المملكة العربية السعودية</h2>
+                    <h2 class="font-bold text-sm">جمعية وحي لتحفيظ القرآن الكريم</h2>
+                    <h2 class="font-bold text-sm" style="color: var(--primary)">دار المفقاعي النسائية بالعيينة والجبيلة</h2>
+                    <div class="text-xs mt-1 font-bold">
+                        تصريح رقم: <input type="text" value="(3088 / 3 / جـ)" class="inline-block w-20">
+                    </div>
+                </div>
+                
+                <!-- وسط الترويسة (الشعار المطلق) -->
+                <div class="w-1/3 flex justify-center items-center">
+                    <!-- يتم سحب الصورة التي أرفقتها المسماة المفقاعي.png -->
+                    <img src="المفقاعي.png" alt="شعار جمعية وحي" class="h-20 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <!-- نص بديل يظهر في حال عدم رفع الصورة لنفس المجلد -->
+                    <div style="display:none;" class="w-16 h-16 border-2 border-dashed rounded-full items-center justify-center text-xs text-center" style="border-color: var(--secondary)">
+                        الشعار<br>هنا
+                    </div>
+                </div>
+
+                <!-- يسار الترويسة (عنوان التقرير) -->
+                <div class="text-left w-1/3 flex flex-col items-end">
+                    <div class="border-2 p-2 rounded-lg text-center shadow-sm w-48" style="border-color: var(--primary); background-color: var(--bg-table-head)">
+                        <h1 class="font-bold text-base" style="color: var(--primary)">تقرير التحضير اليومي</h1>
+                        <div class="text-xs mt-1 font-bold flex items-center justify-center gap-1">
+                            العام الدراسي <input type="text" value="1448 هـ" class="w-12 text-center text-red-700">
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- معلومات اليوم والتاريخ -->
+            <div class="flex justify-between items-center rounded px-3 py-2 mb-4 border font-bold text-sm shadow-sm" style="background-color: var(--bg-table-head); border-color: var(--secondary)">
+                <div class="w-1/3">
+                    يرفع مع السلام لمدير مركز الإشراف
+                </div>
+                <div class="w-1/3 flex justify-center items-center gap-2 border-r border-l px-2" style="border-color: var(--primary)">
+                    <span>اليوم:</span>
+                    <input type="text" value="الأربعاء" class="w-20 text-base" style="color: var(--primary)">
+                </div>
+                <div class="w-1/3 flex justify-end items-center gap-2">
+                    <span>الموافق:</span>
+                    <input type="text" value="20 / 3 / 1448 هـ" class="w-28 text-left text-base" style="color: var(--primary)">
+                </div>
+            </div>
+
+            <div class="mb-4 relative group flex-shrink-0">
+                <div class="flex justify-between items-end mb-1">
+                    <h3 class="section-title">أولاً: الكادر الإداري</h3>
+                    <div class="no-print space-x-1 space-x-reverse opacity-0 group-hover:opacity-100 transition duration-300">
+                        <button onclick="addRow('admin-table', 6)" class="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700">+ إضافة إدارية</button>
+                        <button onclick="removeRow('admin-table')" class="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">- حذف</button>
+                    </div>
+                </div>
+                <table id="admin-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">م</th>
+                            <th style="width: 35%;">اسم الموظفة</th>
+                            <th style="width: 25%;">عملها</th>
+                            <th style="width: 10%;">الحضور</th>
+                            <th style="width: 12.5%;">وقت الحضور</th>
+                            <th style="width: 12.5%;">وقت الانصراف</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-bold">1</td>
+                            <td><input type="text" value="اماني مساعد الرشيدي" class="font-bold"></td>
+                            <td><input type="text" value="المديرة"></td>
+                            <td><input type="text" value="ح" class="font-bold text-green-700"></td>
+                            <td><input type="text" value="3.30"></td>
+                            <td><input type="text" value="6.13"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">2</td>
+                            <td><input type="text" value="بدرية منديل بركي"></td>
+                            <td><input type="text" value="إدارية"></td>
+                            <td><input type="text" value="ح" class="font-bold text-green-700"></td>
+                            <td><input type="text" value="3.39"></td>
+                            <td><input type="text" value="6.00"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">3</td>
+                            <td><input type="text" value="بشرى منير المطيري"></td>
+                            <td><input type="text" value="إدارية"></td>
+                            <td><input type="text" value="ح" class="font-bold text-green-700"></td>
+                            <td><input type="text" value="3.27"></td>
+                            <td><input type="text" value="6.15"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">4</td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="text" value=""></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mb-2 relative group flex-grow">
+                <div class="flex justify-between items-end mb-1">
+                    <h3 class="section-title">ثانياً: المعلمات والحلقات</h3>
+                    <div class="no-print space-x-1 space-x-reverse opacity-0 group-hover:opacity-100 transition duration-300">
+                        <button onclick="addTeacherRow()" class="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700">+ إضافة حلقة</button>
+                        <button onclick="removeRow('teacher-table')" class="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">- حذف</button>
+                    </div>
+                </div>
+                <table id="teacher-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 4%;">م</th>
+                            <th style="width: 18%;">اسم الحلقة</th>
+                            <th style="width: 16%;">صفتها</th>
+                            <th style="width: 20%;">اسم المعلمة</th>
+                            <th style="width: 7%;">الحضور</th>
+                            <th style="width: 9%;">وقت الحضور</th>
+                            <th style="width: 9%;">وقت الانصراف</th>
+                            <th style="width: 7%; font-size: 10px; line-height: 1;">العدد الكلي للطالبات</th>
+                            <th style="width: 5%;">الحضور</th>
+                            <th style="width: 5%;">الغياب</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacher-tbody">
+                        <tr>
+                            <td class="font-bold">1</td>
+                            <td><input type="text" value="جويرية بنت الحارث" class="font-bold"></td>
+                            <td><input type="text" value="ابتدائي"></td>
+                            <td><input type="text" value="هبة بنت سالم المالكي"></td>
+                            <td><input type="text" value="ح" class="font-bold text-green-700"></td>
+                            <td><input type="text" value="4.00"></td>
+                            <td><input type="text" value="6.10"></td>
+                            <td><input type="number" class="calc-total font-bold" value="26"></td>
+                            <td><input type="number" class="calc-present font-bold text-green-700" value="23"></td>
+                            <td class="bg-red-50"><input type="number" class="calc-absent font-bold text-red-700" value="3" readonly tabindex="-1"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">2</td>
+                            <td><input type="text" value="ام حبيبة" class="font-bold"></td>
+                            <td><input type="text" value="أمهات"></td>
+                            <td><input type="text" value="الجازي بنت مسفر السبيعي"></td>
+                            <td><input type="text" value="ح" class="font-bold text-green-700"></td>
+                            <td><input type="text" value="4.00"></td>
+                            <td><input type="text" value="6.10"></td>
+                            <td><input type="number" class="calc-total font-bold" value="30"></td>
+                            <td><input type="number" class="calc-present font-bold text-green-700" value="25"></td>
+                            <td class="bg-red-50"><input type="number" class="calc-absent font-bold text-red-700" value="5" readonly tabindex="-1"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">3</td>
+                            <td><input type="text" value="ام سلمة" class="font-bold"></td>
+                            <td><input type="text" value="ثانوي وجامعيات"></td>
+                            <td><input type="text" value="ایمان بنت محمد إبراهيم"></td>
+                            <td><input type="text" value="ح" class="font-bold text-green-700"></td>
+                            <td><input type="text" value="3.40"></td>
+                            <td><input type="text" value="6.10"></td>
+                            <td><input type="number" class="calc-total font-bold" value="20"></td>
+                            <td><input type="number" class="calc-present font-bold text-green-700" value="16"></td>
+                            <td class="bg-red-50"><input type="number" class="calc-absent font-bold text-red-700" value="4" readonly tabindex="-1"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">4</td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="number" class="calc-total font-bold" value=""></td>
+                            <td><input type="number" class="calc-present font-bold text-green-700" value=""></td>
+                            <td class="bg-red-50"><input type="number" class="calc-absent font-bold text-red-700" value="" readonly tabindex="-1"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">5</td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="text" value=""></td>
+                            <td><input type="number" class="calc-total font-bold" value=""></td>
+                            <td><input type="number" class="calc-present font-bold text-green-700" value=""></td>
+                            <td class="bg-red-50"><input type="number" class="calc-absent font-bold text-red-700" value="" readonly tabindex="-1"></td>
+                        </tr>
+                    </tbody>
+                    <!-- صف المجاميع النهائية -->
+                    <tfoot>
+                        <tr>
+                            <td colspan="7" class="text-left px-4 font-bold text-sm" style="color: var(--primary); background-color: var(--bg-table-head)">الإجمــــــالـــــي الكـــلــــــي :</td>
+                            <td style="background-color: var(--bg-table-head)"><input type="text" id="sum-total" value="76" class="font-bold text-base" readonly></td>
+                            <td style="background-color: var(--bg-table-head)"><input type="text" id="sum-present" value="64" class="font-bold text-base text-green-700" readonly></td>
+                            <td style="background-color: var(--bg-table-head)"><input type="text" id="sum-absent" value="12" class="font-bold text-base text-red-700" readonly></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="mt-auto pt-4 border-t-2 flex justify-between items-end flex-shrink-0" style="border-color: var(--secondary)">
+                
+                <!-- معد التقرير -->
+                <div class="text-center w-1/3">
+                    <p class="font-bold mb-6 text-sm" style="color: var(--primary)">معد التقرير</p>
+                    <input type="text" value="......................................" class="font-bold text-center text-sm w-3/4 mx-auto block">
+                    <div class="mt-1 text-xs text-gray-500">الاسم والتوقيع</div>
+                </div>
+
+                <!-- الختم الرسمي -->
+                <div class="text-center w-1/3 flex flex-col items-center justify-end h-24">
+                    <div class="w-24 h-24 border-2 border-dashed rounded-full flex items-center justify-center font-bold opacity-40 text-sm" style="border-color: var(--primary); color: var(--primary)">
+                        الختم الرسمي
+                    </div>
+                </div>
+
+                <!-- المديرة -->
+                <div class="text-center w-1/3">
+                    <p class="font-bold mb-6 text-sm" style="color: var(--primary)">المديرة</p>
+                    <input type="text" value="أماني مساعد الرشيدي" class="font-bold text-center text-sm w-3/4 mx-auto block">
+                    <div class="mt-1 text-xs text-gray-500">التوقيع</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 1. نظام تغيير القوالب اللونية
+        function changeTheme(primary, secondary, bgTableHead) {
+            document.documentElement.style.setProperty('--primary', primary);
+            document.documentElement.style.setProperty('--secondary', secondary);
+            document.documentElement.style.setProperty('--border-color', primary);
+            document.documentElement.style.setProperty('--bg-table-head', bgTableHead);
+            
+            // تغيير لون النص بناء على الخلفية لضمان القراءة
+            if(primary === '#000000') {
+                document.documentElement.style.setProperty('--text-main', '#000000');
+            } else {
+                document.documentElement.style.setProperty('--text-main', '#111827');
+            }
+        }
+
+        // 2. نظام تغيير الخطوط
+        function changeFont(fontFamily) {
+            document.documentElement.style.setProperty('--font-main', fontFamily);
+        }
+
+        // 3. إعادة ترقيم الجداول
+        function updateRowNumbers(tableId) {
+            const table = document.getElementById(tableId);
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach((row, index) => {
+                row.querySelector('td:first-child').innerText = index + 1;
+            });
+        }
+
+        // 4. إضافة صف للإداريات
+        function addRow(tableId, cols) {
+            const table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+            // منع إضافة صفوف كثيرة تفسد ورقة A4
+            if(table.rows.length >= 6) {
+                alert("تنبيه: إضافة المزيد من الصفوف قد يؤدي إلى انقسام الورقة عند الطباعة.");
+            }
+            const newRow = table.insertRow();
+            let cellsHTML = `<td class="font-bold"></td>`;
+            for(let i=1; i<cols; i++) {
+                cellsHTML += `<td><input type="text" value=""></td>`;
+            }
+            newRow.innerHTML = cellsHTML;
+            updateRowNumbers(tableId);
+        }
+
+        // 5. إضافة صف للمعلمات
+        function addTeacherRow() {
+            const table = document.getElementById('teacher-table').getElementsByTagName('tbody')[0];
+            if(table.rows.length >= 8) {
+                alert("تنبيه: إضافة المزيد من الصفوف قد يؤدي إلى انقسام الورقة عند الطباعة.");
+            }
+            const newRow = table.insertRow();
+            newRow.innerHTML = `
+                <td class="font-bold"></td>
+                <td><input type="text" value=""></td>
+                <td><input type="text" value=""></td>
+                <td><input type="text" value=""></td>
+                <td><input type="text" value=""></td>
+                <td><input type="text" value=""></td>
+                <td><input type="text" value=""></td>
+                <td><input type="number" class="calc-total font-bold" value=""></td>
+                <td><input type="number" class="calc-present font-bold text-green-700" value=""></td>
+                <td class="bg-red-50"><input type="number" class="calc-absent font-bold text-red-700" value="" readonly tabindex="-1"></td>
+            `;
+            updateRowNumbers('teacher-table');
+        }
+
+        // 6. حذف صف من جدول
+        function removeRow(tableId) {
+            const table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+            if(table.rows.length > 1) {
+                table.deleteRow(-1); // يحذف آخر صف
+                calculateTotals(); // إعادة الحساب في حال تم حذف صف معلمات
+            }
+        }
+
+        // 7. محرك الحسابات الذكي (يحدث فورياً)
+        function calculateTotals() {
+            const rows = document.querySelectorAll('#teacher-tbody tr');
+            let sumTotal = 0, sumPresent = 0, sumAbsent = 0;
+
+            rows.forEach(row => {
+                const totalInput = row.querySelector('.calc-total');
+                const presentInput = row.querySelector('.calc-present');
+                const absentInput = row.querySelector('.calc-absent');
+                
+                if(totalInput && presentInput && absentInput) {
+                    const total = parseInt(totalInput.value) || 0;
+                    const present = parseInt(presentInput.value) || 0;
+                    
+                    // حساب الغياب لكل صف
+                    let absent = 0;
+                    if(totalInput.value !== "" || presentInput.value !== "") {
+                        absent = total - present;
+                        if(absent < 0) absent = 0;
+                        absentInput.value = absent;
+                    } else {
+                        absentInput.value = ""; // تفريغ الحقل إذا كانت المدخلات فارغة
+                    }
+
+                    // تجميع الإجماليات
+                    sumTotal += total;
+                    sumPresent += present;
+                    if(totalInput.value !== "") sumAbsent += absent;
+                }
+            });
+
+            // طباعة الإجماليات النهائية في الفوتر
+            document.getElementById('sum-total').value = sumTotal || '';
+            document.getElementById('sum-present').value = sumPresent || '';
+            document.getElementById('sum-absent').value = sumAbsent || '';
+        }
+
+        // مراقبة كتابة الأرقام لتشغيل الحسابات
+        document.getElementById('teacher-tbody').addEventListener('input', function(e) {
+            if (e.target.classList.contains('calc-total') || e.target.classList.contains('calc-present')) {
+                calculateTotals();
+            }
+        });
+
+        // تشغيل مبدئي لتأكيد الحسابات الموجودة مسبقاً
+        window.onload = calculateTotals;
+    </script>
+</body>
+</html>
