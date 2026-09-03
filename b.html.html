@@ -230,26 +230,21 @@
             <!-- الترويسة الفاخرة (Header) -->
             <header class="flex justify-between items-center border-b-2 pb-2 mb-4" style="border-color: var(--primary)">
                 
-                <!-- يمين الترويسة -->
-                <div class="text-right w-1/3 leading-relaxed">
+                <!-- يمين الترويسة (الشعار الإجباري) -->
+                <div class="w-1/3 flex justify-start items-center">
+                    <img src="المفقاعي.png" alt="شعار جمعية وحي" class="h-20 object-contain block">
+                </div>
+
+                <!-- وسط الترويسة (البيانات الرسمية) -->
+                <div class="text-center w-1/3 leading-relaxed flex flex-col items-center justify-center">
                     <h2 class="font-bold text-sm">المملكة العربية السعودية</h2>
                     <h2 class="font-bold text-sm">جمعية وحي لتحفيظ القرآن الكريم</h2>
                     <h2 class="font-bold text-sm" style="color: var(--primary)">دار المفقاعي النسائية بالعيينة والجبيلة</h2>
                     <div class="text-xs mt-1 font-bold">
-                        تصريح رقم: <input type="text" value="(3088 / 3 / جـ)" class="inline-block w-20">
+                        تصريح رقم: <input type="text" value="(3088 / 3 / جـ)" class="inline-block w-24 text-center">
                     </div>
                 </div>
                 
-                <!-- وسط الترويسة (الشعار المطلق) -->
-                <div class="w-1/3 flex justify-center items-center">
-                    <!-- يتم سحب الصورة التي أرفقتها المسماة المفقاعي.png -->
-                    <img src="المفقاعي.png" alt="شعار جمعية وحي" class="h-20 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <!-- نص بديل يظهر في حال عدم رفع الصورة لنفس المجلد -->
-                    <div style="display:none;" class="w-16 h-16 border-2 border-dashed rounded-full items-center justify-center text-xs text-center" style="border-color: var(--secondary)">
-                        الشعار<br>هنا
-                    </div>
-                </div>
-
                 <!-- يسار الترويسة (عنوان التقرير) -->
                 <div class="text-left w-1/3 flex flex-col items-end">
                     <div class="border-2 p-2 rounded-lg text-center shadow-sm w-48" style="border-color: var(--primary); background-color: var(--bg-table-head)">
